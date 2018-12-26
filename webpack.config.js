@@ -14,6 +14,7 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({
+            publicPath:__dirname + 'dist/',
             template: 'src/index.html',
         }),
         new webpack.NamedModulesPlugin(),
@@ -47,6 +48,9 @@ module.exports = {
                 }]
             }
         ]
+    },
+    resolve: {
+        extensions: ['.js', '.jsx'], //后缀名自动补全
     },
     output: {
         filename: '[name].bundle.js',

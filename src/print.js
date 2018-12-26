@@ -1,7 +1,13 @@
 /**
  * Created by xuqinrui on 2017/11/20.
  */
-export default function printMe() {
-    console.log(1);
-
+function printMe(num) {
+    console.log(num);
+    return 1
 }
+
+export default function PrintOther(){
+    console.log('other')
+}
+export {printMe};
+
