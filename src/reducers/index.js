@@ -1,9 +1,7 @@
 export default function counter(count = 0, action) {
     switch (action.type) {
       case 'INCREMENT':
-        return count + 1
-      case 'INCREMENT_IF_ODD':
-        return (count % 2 !== 0) ? count + 1 : count
+        return Object.assign({},state, {count:++state.count || 1})
       case 'DECREMENT':
         return count - 1
       default:
