@@ -4,26 +4,45 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider, connect } from 'react-redux';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import createSagaMiddleware from 'redux-saga'
+import { BrowserRouter, Route, Switch, Link } from 'react-router-dom';
+import Acontainer from './containers/Arouter'
 import counter from './reducers';
-import a, { printMe } from './print';
-import Lion from 'test-es6';
+import rootSaga from './sagas';
 import './style.less'
-console.log(a, printMe)
-console.log(new Lion())
 
-const store = createStore(counter);
-store.subscribe(()=>{console.log(store.getState())})
 
-const mapStateToProps = state => ({count:state});
 
+const mapStateToProps = state => ({count:state.count});
+const logger = (store) => {
+    return (next) => {
+        console.log(next)
+        return (action) => {
+            // console.log('dispatching', action)
+            let result = next(action)
+            console.log('next state', store.getState())
+            return result
+        }
+    }
+}
+
+const bindMiddleware = middleware => {
+    if (process.env.NODE_ENV !== 'production') {
+        const { composeWithDevTools } = require('redux-devtools-extension');
+        return composeWithDevTools(applyMiddleware(...middleware));
+    }
+    return applyMiddleware(...middleware);
+};
+let sagaMiddleware = createSagaMiddleware();
+const store = createStore(counter, {}, bindMiddleware([logger,sagaMiddleware]));
+sagaMiddleware.run(rootSaga);
 
 class App extends React.Component{
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.handleClick = () => {
-            this.props.dispatch({type:'INCREMENT'})
-            console.log(this.props);
+            this.props.dispatch({type:'INCREMENT_ASYNC'})
         }
     }
     componentWillReceiveProps(nextProps){
@@ -36,7 +55,6 @@ class App extends React.Component{
         const { count } = this.props;
         return (<div className={`square`} onClick={this.handleClick} >{`${count}`}
 
-
         </div>);
     }
 }
@@ -45,7 +63,10 @@ class App extends React.Component{
 App = connect(mapStateToProps)(App);
 ReactDOM.render((
     <Provider store={store} >
-        <App />
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
+
     </Provider>
    
     ), document.getElementById('content')
