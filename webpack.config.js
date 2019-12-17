@@ -7,9 +7,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
-    entry: {
-        app: './src/index.js'
-    },
+    entry: ['webpack-hot-middleware/client?noInfo=true&reload=true' ,'./src/index.js'],
     devtool: 'inline-source-map',
     plugins: [
         new CleanWebpackPlugin(['dist']),
@@ -58,4 +56,4 @@ module.exports = {
         publicPath: '/'
     },
     mode: 'development'
-};
+}

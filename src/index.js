@@ -1,7 +1,7 @@
 /**
  * Created by xuqinrui on 2017/11/20.
  */
-import React from 'react';
+import React, {lazy, Suspense} from 'react';
 import ReactDOM from 'react-dom';
 import { Provider, connect } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
@@ -12,9 +12,22 @@ import counter from './reducers';
 import rootSaga from './sagas';
 import './style.less'
 
+const OtherComponent = lazy(() => new Promise(resolve =>
+    setTimeout(() =>
+            resolve(
+                // 模拟ES Module
+                {
+                    // 模拟export default
+                    default: function render() {
+                        return <div>Other Component</div>
+                    }
+                }
+            ),
+        3000
+    )
+));
 
-
-const mapStateToProps = state => ({count:state.count});
+const mapStateToProps = state => ({count:state.countContainer.counter.count});
 const logger = (store) => {
     return (next) => {
         console.log(next)
@@ -49,13 +62,33 @@ class App extends React.Component{
         // console.log(nextProps)
     }
 
-    componentDidMount(){}
-
     render(){
         const { count } = this.props;
-        return (<div className={`square`} onClick={this.handleClick} >{`${count}`}
+        return (
 
-        </div>);
+
+                <div className={`square`} onClick={this.handleClick} >{`${count}`}
+                    Hello World
+
+                    <DefaultPropsTestComponent />
+                </div>
+
+
+
+        );
+
+    }
+}
+
+class DefaultPropsTestComponent extends React.Component {
+
+
+    render(){
+        return <Suspense fallback={<div>Loading...</div>}>
+            <OtherComponent />
+            <div>testSomething</div>
+        </Suspense>
+
     }
 }
 
